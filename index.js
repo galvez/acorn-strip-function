@@ -1,4 +1,5 @@
 const { tokenizer } = require('acorn')
+const MagicString = require('magic-string')
 
 const acornSettings = {
   ecmaVersion: 'latest',
@@ -8,15 +9,14 @@ const acornSettings = {
   allowImportExportEverywhere: true,
 }
 
-module.exports = function removeFunction (code, funcName, { 
-  exportsOnly = false,
+module.exports = function stripFunction (code, funcName, { 
   settings = acornSettings, 
   tokens
 } = {}) {
   if (!tokens) {
     tokens = tokenizer(code, acornSettings)[Symbol.iterator]()
   }
-  let slice = []
+  const slices = []
   let step = null  
   while (true) {
     step = tokens.next()
@@ -25,24 +25,21 @@ module.exports = function removeFunction (code, funcName, {
     }
     try {
       const { value: token } = step
-      if (exportsOnly) {
-        if (token.type.label === 'export') {
-          let func = tokens.next()
-          if (['function', 'const'].includes(func.value.type.label)) {
-            name = tokens.next()
-            if (name.value.type.label === 'name' && name.value.value === funcName) {
-              const functionEnd = findFunctionEnd(tokens)
-              slice.push(token.start, functionEnd)
-              break
-            }
+      if (token.type.label === 'export') {
+        let func = tokens.next()
+        if (['function', 'const'].includes(func.value.type.label)) {
+          name = tokens.next()
+          if (name.value.type.label === 'name' && name.value.value === funcName) {
+            const functionEnd = findFunctionEnd(tokens)
+            slices.push([token.start, functionEnd])
           }
         }
-      } else if (['function', 'const'].includes(token.type.label)) {
+      }
+      if (['function', 'const'].includes(token.type.label)) {
         name = tokens.next()
         if (name.value.type.label === 'name' && name.value.value === funcName) {
           const functionEnd = findFunctionEnd(tokens)
-          slice.push(token.start, functionEnd)
-          break
+          slices.push([token.start, functionEnd])
         }
       }
     }
@@ -50,12 +47,12 @@ module.exports = function removeFunction (code, funcName, {
       throw e
     }
   }
-  if (slice.length === 2) {
-    return `${
-      code.slice(0, slice[0])
-    }${
-      code.slice(slice[1])
-    }`
+  if (slices.length) {
+    code = new MagicString(code)
+    for (const slice of slices) {
+      code.overwrite(slice[0], slice[1], '')
+    }
+    return code.toString()
   } else {
     return code
   }

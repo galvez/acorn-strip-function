@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "name": "acorn-strip-function",
+  "description": "Remove functions from JavaScript source via acorn",
+  "dependencies": {
+    "acorn": "^8.7.1",
+    "magic-string": "^0.26.2"
+  },
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "test": "tap test/index.js"
+  },
+  "devDependencies": {
+    "tap": "^16.2.0"
+  },
+  "tap": {
+    "check-coverage": false
+  },
+  "license": "MIT"
+}
