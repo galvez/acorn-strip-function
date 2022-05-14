@@ -21,10 +21,10 @@ console.log(stripFunction('function removeMe() {}', 'removeMe') === '')
 
 ### `stripFunction(source, functionName, { tokens, settings })`
 
-- `source`: Source code as string
-- `functionName`: Name of function to be removed across code
-- `tokens`: Provide existing `acorn` tokenizer instance, ignores `source`
-- `settings`: Provide custom acorn settings (default: modules with latest JavaScript features)
+- `source`: Source code as string.
+- `functionName`: Name of function to be removed across code.
+- `tokens`: Provide existing `acorn` tokenizer instance, ignores `source`.
+- `settings`: Provide custom acorn settings (default: modules with latest JavaScript features).
 
 ## License
 
