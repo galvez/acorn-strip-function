@@ -1,4 +1,5 @@
-const { tokenizer } = require('acorn')
+const acorn = require('acorn')
+const acornJsx = require('acorn-jsx')
 const MagicString = require('magic-string')
 
 const acornSettings = {
@@ -14,7 +15,7 @@ module.exports = function stripFunction (code, funcName, {
   tokens
 } = {}) {
   if (!tokens) {
-    tokens = tokenizer(code, acornSettings)[Symbol.iterator]()
+    tokens = acorn.Parser.extend(acornJsx()).tokenizer(code, acornSettings)[Symbol.iterator]()
   }
   const slices = []
   let step = null  
@@ -61,14 +62,20 @@ module.exports = function stripFunction (code, funcName, {
 function findFunctionEnd (iter) {
   let next
   let level = 0
+  let parens = false
   while (next = iter.next()) {
     if (next.done) {
       break
     }
     const { value: innerToken } = next
-    if (innerToken.type.label === '{') {
+    if (innerToken.type.label === '(') {
+      parens = true
+    } else if (innerToken.type.label === ')') {
+      parens = false
+    }
+    if (!parens && innerToken.type.label === '{') {
       level += 1
-    } else if (innerToken.type.label === '}') {
+    } else if (!parens && innerToken.type.label === '}') {
       if (--level === 0) {
         return innerToken.end
         break

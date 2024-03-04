@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { Link } from 'react-router-dom'
 
-const remove = () => {
+const remove = ({ foobar }) => {
   if (something) {
   }
 }

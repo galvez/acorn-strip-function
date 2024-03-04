@@ -20,3 +20,10 @@ t.test('should remove named functions', (t) => {
   const after = loadFixture('named-function.after.js')
   t.equal(after, stripFunction(before, 'remove'))
 })
+
+t.test('should remove functions with JSX', (t) => {
+  t.plan(1)
+  const before = loadFixture('jsx.before.js')
+  const after = loadFixture('jsx.after.js')
+  t.equal(after, stripFunction(before, 'remove'))
+})

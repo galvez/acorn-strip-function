@@ -1,6 +1,6 @@
 # acorn-strip-function
 
-Strip functions from JavaScript source via acorn.
+Strip functions from JavaScript/JSX source via acorn.
 
 ## Install
 
